@@ -4,7 +4,10 @@ CLUSTER_CIDR="172.16.0.0/16"
 SERVICE_CIDR="10.43.0.0/16"
 CLUSTER_DNS="10.43.0.10"
 K3S_VERSION="v1.25.8%2Bk3s1"
-
+#K3S_FEATURES_DISABLED="traefik,local-storage,metrics-server,servicelb"
+K3S_FEATURES_DISABLED="traefik,local-storage,metrics-server"
+#DISABLE_KUBE_PROXY="--disable-kube-proxy"
+DISABLE_KUBE_PROXY=""
 Help()
 {
    # Display Help
@@ -103,7 +106,7 @@ runcmd:
   - [ /usr/bin/chmod, +x, /root/prepare.sh ]
   - [ /root/prepare.sh, "$K3S_VERSION" ]
   - [ /usr/bin/chmod, +x, /root/control.sh ]
-  - [ /root/control.sh, "$CLUSTER_CIDR" ]
+  - [ /root/control.sh, "$CLUSTER_CIDR", "$SERVICE_CIDR", "$CLUSTER_DNS", "$K3S_FEATURES_DISABLED", "$DISABLE_KUBE_PROXY" ]
   - [ /usr/bin/chown, -R, ubuntu:ubuntu, /home/ubuntu ]
   - [ /usr/bin/systemctl, enable, k3s.service ]
 
