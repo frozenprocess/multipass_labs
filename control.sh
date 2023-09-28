@@ -13,4 +13,4 @@ maxPods: 4000
 EOF
 # Increase pod-count
 
-INSTALL_K3S_SKIP_DOWNLOAD=true K3S_KUBECONFIG_MODE="644" INSTALL_K3S_EXEC="--kubelet-arg=config=/etc/kubelet.conf --flannel-backend=none --cluster-cidr=$CLUSTER_CIDR --service-cidr=$SERVICE_CIDR --cluster-dns=$CLUSTER_DNS --disable-network-policy $DISABLE_KUBE_PROXY --disable=traefik,local-storage,metrics-server,servicelb" /root/install.sh
+INSTALL_K3S_SKIP_DOWNLOAD=true K3S_KUBECONFIG_MODE="644" INSTALL_K3S_EXEC="--kubelet-arg=config=/etc/kubelet.conf --flannel-backend=none --cluster-cidr=$CLUSTER_CIDR --service-cidr=$SERVICE_CIDR --cluster-dns=$CLUSTER_DNS --disable-network-policy $DISABLE_KUBE_PROXY --disable=$K3S_FEATURES" /root/install.sh
