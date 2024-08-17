@@ -8,6 +8,13 @@ else
     CONTROL_NAME="control"
 fi
 
+if [[ "$(dig +short $CONTROL_NAME.local)" != "" ]];then
+CONTROL_NAME=$CONTROL_NAME.local
+elif [[ "$(dig +short $CONTROL_NAME.mshome.net)" != "" ]];then
+CONTROL_NAME=$CONTROL_NAME.mshome.net
+elif [[ "$(dig +short $CONTROL_NAME.multipass)" != "" ]];then
+CONTROL_NAME=$CONTROL_NAME.multipass
+fi
 # Multi cluster
 
 TRIES=0

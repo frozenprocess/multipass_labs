@@ -3,7 +3,7 @@
 CLUSTER_CIDR="172.16.0.0/16"
 SERVICE_CIDR="10.43.0.0/16"
 CLUSTER_DNS="10.43.0.10"
-K3S_VERSION="v1.25.8%2Bk3s1"
+K3S_VERSION="v1.28.12%2Bk3s1"
 #K3S_FEATURES_DISABLED="traefik,local-storage,metrics-server,servicelb"
 K3S_FEATURES_DISABLED="traefik,local-storage,metrics-server"
 #DISABLE_KUBE_PROXY="--disable-kube-proxy"
@@ -70,12 +70,19 @@ done
 rm -rf release
 mkdir release
 
-PREPARE=`base64 prepare.sh -w 0`
-CONTROL=`base64 control.sh -w 0`
-NODE=`base64 node.sh -w 0`
-REGISTRY_CONFIG=`base64 registry-config.yml -w 0`
-REGISTRY_CRT=`base64 certs/domain.crt -w 0`
-REGISTRY_KEY=`base64 certs/domain.key -w 0`
+if [[ "$(uname -s)" == "Darwin" ]];then
+BASE_DECODE="base64 -i"
+else
+BASE_DECODE="base64 -d"
+fi
+
+PREPARE=`$BASE_DECODE prepare.sh`
+CONTROL=`$BASE_DECODE control.sh`
+NODE=`$BASE_DECODE node.sh`
+REGISTRY_CONFIG=`$BASE_DECODE registry-config.yml`
+REGISTRY_CRT=`$BASE_DECODE certs/domain.crt`
+REGISTRY_KEY=`$BASE_DECODE certs/domain.key`
+
 CA_CRT=`sed 's/^/      /' certs/ca.crt`
 
 cat > release/control-init.yaml <<-EOF
