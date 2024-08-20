@@ -73,7 +73,7 @@ mkdir release
 if [[ "$(uname -s)" == "Darwin" ]];then
 BASE_DECODE="base64 -i"
 else
-BASE_DECODE="base64 -d"
+BASE_DECODE="base64 -w 0 "
 fi
 
 PREPARE=`$BASE_DECODE prepare.sh`
