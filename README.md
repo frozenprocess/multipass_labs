@@ -34,6 +34,11 @@ openssl x509 -req \
     -days 1024 \
     -sha256 -extensions v3_req -extfile req.conf
 ```
+# How to prepare release files?
+Use the following command to build the cloud-init that bootstraps the k3s installation
+```
+./build.sh
+```
 
 # How to spin up a cluster?
 
