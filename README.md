@@ -32,15 +32,17 @@ openssl x509 -req \
     -sha256 -extensions v3_req -extfile req.conf
 ```
 
+# How to spin up a cluster?
+
+Pretty simple just use the following commands:
 ```
 multipass launch -n c1-control -c 2 -d 50G -m 2048M 24.04 --cloud-init  release/control-init.yaml
-multipass launch -n c1-node -c 2 -d 50G  -m 2048M 24.04 --cloud-init  release/node-init.yaml
-
-multipass launch -n c2-control -c 2 -m 2048M 22.04 --cloud-init  release/control-init.yaml
-multipass launch -n c2-node -c 2 -m 2048M 22.04 --cloud-init  release/node-init.yaml
-
-multipass launch -n c3-control -c 2 -m 2048M 22.04 --cloud-init  release/control-init.yaml
-multipass launch -n c3-node -c 2 -m 2048M 22.04 --cloud-init  release/node-init.yaml
+multipass launch -n c1-node-1 -c 2 -d 50G  -m 2048M 24.04 --cloud-init  release/node-init.yaml
+```
+You can create multiple nodes by changing the node name in the last command and running it again
+```
+multipass launch -n c1-node-2 -c 2 -d 50G  -m 2048M 24.04 --cloud-init  release/node-init.yaml
+multipass launch -n c1-node-3 -c 2 -d 50G  -m 2048M 24.04 --cloud-init  release/node-init.yaml
 ```
 
 # Is it possible to use a trusted cert?
