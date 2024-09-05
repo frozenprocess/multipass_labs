@@ -32,5 +32,16 @@ openssl x509 -req \
     -sha256 -extensions v3_req -extfile req.conf
 ```
 
+```
+multipass launch -n c1-control -c 2 -d 50G -m 2048M 24.04 --cloud-init  release/control-init.yaml
+multipass launch -n c1-node -c 2 -d 50G  -m 2048M 24.04 --cloud-init  release/node-init.yaml
+
+multipass launch -n c2-control -c 2 -m 2048M 22.04 --cloud-init  release/control-init.yaml
+multipass launch -n c2-node -c 2 -m 2048M 22.04 --cloud-init  release/node-init.yaml
+
+multipass launch -n c3-control -c 2 -m 2048M 22.04 --cloud-init  release/control-init.yaml
+multipass launch -n c3-node -c 2 -m 2048M 22.04 --cloud-init  release/node-init.yaml
+```
+
 # Is it possible to use a trusted cert?
 Yes, try [Docker](https://docs.docker.com/registry/deploying/#support-for-lets-encrypt) documentation.
