@@ -1,0 +1,32 @@
+package_update: true
+packages:
+  - docker-registry
+  - docker.io
+users:
+  - default
+write_files:
+- encoding: b64
+  content: {{PREPARE}}
+  owner: root:root
+  path: /root/prepare.sh
+- encoding: b64
+  content: {{REGISTRY_CONFIG}}
+  owner: root:root
+  path: /etc/docker/registry/config.yml
+- encoding: b64
+  content: {{REGISTRY_CRT}}
+  owner: root:root
+  path: /etc/docker/registry/ca.crt
+- encoding: b64
+  content: {{REGISTRY_KEY}}
+  owner: root:root
+  path: /etc/docker/registry/ca.key
+disable_root: false
+ssh_authorized_keys:
+  - {{SSH_KEY}}
+runcmd:
+  - [ /usr/bin/chmod, +x, /root/prepare.sh ]
+  - [ /root/prepare.sh ]
+  - [ /usr/sbin/usermod -aG docker ubuntu ]
+  - [ /usr/bin/systemctl, enable, docker.service ]
+  - [ /usr/bin/systemctl, enable, docker-registry.service ]

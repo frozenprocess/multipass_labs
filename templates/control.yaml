@@ -1,0 +1,35 @@
+package_update: true
+packages:
+  - conntrack
+users:
+  - default
+disable_root: false
+ssh_authorized_keys:
+  - {{SSH_KEY}}
+ca_certs:
+  trusted:
+    - registry_ca_crt
+    - |
+{{CA_CRT}}
+write_files:
+- encoding: b64
+  content: $PREPARE
+  owner: root:root
+  path: /root/prepare.sh
+- encoding: b64
+  content: {{CONTROL}}
+  owner: root:root
+  path: /root/control.sh
+- encoding: b64
+  content: {{INSTALL}}
+  owner: root:root
+  path: /root/install.sh
+runcmd:
+  - [ /usr/bin/chmod, +x, /root/prepare.sh ]
+  - [ /root/prepare.sh ]
+  - [ /usr/bin/chmod, +x, /root/install.sh ]
+  - [ /root/install.sh ]
+  - [ /usr/bin/chown, -R, ubuntu:ubuntu, /home/ubuntu ]
+
+power_state:
+  mode: reboot
