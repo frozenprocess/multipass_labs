@@ -46,6 +46,9 @@ Pretty simple just use the following commands:
 ```
 multipass launch -n c1-control -c 2 -d 50G -m 2048M 24.04 --cloud-init  release/kubeadm/control-init.yaml
 multipass launch -n c1-node-1 -c 2 -d 50G  -m 2048M 24.04 --cloud-init  release/kubeadm/node-init.yaml
+
+multipass launch -n c1-control -c 2 -d 50G -m 2048M 24.04 --cloud-init  release/k3s/control-init.yaml
+multipass launch -n c1-node-1 -c 2 -d 50G  -m 2048M 24.04 --cloud-init  release/k3s/node-init.yaml
 ```
 
 You can create multiple nodes by changing the node name in the last command and running it again

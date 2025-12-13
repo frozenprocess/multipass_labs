@@ -2,11 +2,14 @@
 
 ## PREPARE
 
-KUBERNETES_VERSION=1.35
-CIDR=172.16.0.0
-CONTAINERD=2.0.2
-RUNC=1.2.4
-CNI_PLUGIN=1.6.2
+# KUBERNETES_VERSION=1.35
+# CONTAINERD=2.0.2
+# RUNC=1.2.4
+# CNI_PLUGIN=1.6.2
+# RELEASE_CHANNEL=stable
+set -a
+source /etc/environment
+set +a
 
 cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf
 overlay
@@ -61,8 +64,8 @@ systemctl restart containerd
 
 sudo apt-get update
 sudo apt-get install -y apt-transport-https ca-certificates curl gpg
-curl -fsSL https://pkgs.k8s.io/core:/prerelease:/v$KUBERNETES_VERSION/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
-echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/prerelease:/v$KUBERNETES_VERSION/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+curl -fsSL https://pkgs.k8s.io/core:/$RELEASE_CHANNEL:/v$KUBERNETES_VERSION/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/$RELEASE_CHANNEL:/v$KUBERNETES_VERSION/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
 sudo apt-get update
 sudo apt-get install -y kubelet kubeadm kubectl jq
 sudo apt-mark hold kubelet kubeadm kubectl

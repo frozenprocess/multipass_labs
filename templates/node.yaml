@@ -9,6 +9,19 @@ ca_certs:
     - |
 {{CA_CRT}}
 write_files:
+- path: "/etc/environment"
+  append: true
+  content: |
+    export CLUSTER_CIDR="{{CLUSTER_CIDR}}"
+    export SERVICE_CIDR="{{SERVICE_CIDR}}"
+    export CLUSTER_DNS="{{CLUSTER_DNS}}"
+    export K3S_FEATURES_DISABLED="{{K3S_FEATURES_DISABLED}}"
+    export DISABLE_KUBE_PROXY="{{DISABLE_KUBE_PROXY}}"
+    export KUBERNETES_VERSION="{{KUBERNETES_VERSION}}"
+    export CONTAINERD="{{CONTAINERD}}"
+    export RUNC="{{RUNC}}"
+    export CNI_PLUGIN="{{CNI_PLUGIN}}"
+    export RELEASE_CHANNEL="{{RELEASE_CHANNEL}}"
 - encoding: b64
   content: {{PREPARE}}
   owner: root:root
@@ -28,6 +41,7 @@ ssh_keys:
   rsa_public: {{SSH_KEY_PUB}}
 
 runcmd:
+  - [ source, /etc/environment ]
   - [ /usr/bin/chmod, +x, /root/prepare.sh]
   - [ /root/prepare.sh ]
   - [ /usr/bin/chmod, +x, /root/node.sh ]

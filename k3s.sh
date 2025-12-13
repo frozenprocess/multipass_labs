@@ -1,9 +1,14 @@
 #!/bin/bash
+
 #K3S_VERSION="v1.23.16%2Bk3s1"
 #K3S_VERSION="v1.25.8%2Bk3s1"
-K3S_VERSION=$1
+# K3S_VERSION=$1
 
-if [[ `uname -m` != "x86_64" ]]
+set -a
+source /etc/environment
+set +a
+
+if [[ `uname -m` != "x86_64" ]]; then
 ARCH="-arm64"
 fi
 
@@ -12,8 +17,8 @@ echo "Downloading k3s binary for $ARCH"
 /usr/bin/curl -L https://github.com/k3s-io/k3s/releases/download/$K3S_VERSION/k3s$ARCH -o /usr/local/bin/k3s
 /usr/bin/chmod +x /usr/local/bin/k3s
 
-/usr/bin/curl https://get.k3s.io/ > /root/install.sh
-/usr/bin/chmod +x /root/install.sh
+/usr/bin/curl https://get.k3s.io/ > /root/k3s-install.sh
+/usr/bin/chmod +x /root/k3s-install.sh
 
 # Increase pod-count
 cat >>  /etc/kubelet.conf <<-EOF

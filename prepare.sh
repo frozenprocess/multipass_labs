@@ -1,5 +1,9 @@
 #!/bin/bash
 
+set -a
+source /etc/environment
+set +a
+
 # WHATS the ARCH?
 if [[ `uname -m` == "x86_64" ]]
 then

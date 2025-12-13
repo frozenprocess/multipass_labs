@@ -12,6 +12,19 @@ ca_certs:
     - |
 {{CA_CRT}}
 write_files:
+- path: "/etc/environment"
+  append: true
+  content: |
+    export CLUSTER_CIDR="{{CLUSTER_CIDR}}"
+    export SERVICE_CIDR="{{SERVICE_CIDR}}"
+    export CLUSTER_DNS="{{CLUSTER_DNS}}"
+    export K3S_FEATURES_DISABLED="{{K3S_FEATURES_DISABLED}}"
+    export DISABLE_KUBE_PROXY="{{DISABLE_KUBE_PROXY}}"
+    export KUBERNETES_VERSION="{{KUBERNETES_VERSION}}"
+    export CONTAINERD="{{CONTAINERD}}"
+    export RUNC="{{RUNC}}"
+    export CNI_PLUGIN="{{CNI_PLUGIN}}"
+    export RELEASE_CHANNEL="{{RELEASE_CHANNEL}}"
 - encoding: b64
   content: {{PREPARE}}
   owner: root:root
@@ -30,7 +43,7 @@ runcmd:
   - [ /usr/bin/chmod, +x, /root/install.sh ]
   - [ /root/install.sh ]
   - [ /usr/bin/chmod, +x, /root/control.sh ]
-  - [ /root/control.sh, "{{CLUSTER_CIDR}}", "{{SERVICE_CIDR}}", "{{CLUSTER_DNS}}", "{{K3S_FEATURES_DISABLED}}", "{{DISABLE_KUBE_PROXY}}" ]
+  - [ /root/control.sh ]
   - [ /usr/bin/chown, -R, ubuntu:ubuntu, /home/ubuntu ]
 
 power_state:

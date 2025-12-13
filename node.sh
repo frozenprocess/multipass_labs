@@ -1,5 +1,9 @@
 #!/bin/bash
 
+set -a
+source /etc/environment
+set +a
+
 # Multi cluster
 NODE_NAME=`hostname | sed -e 's/\(.*\?node\).*\?/\1/'`
 if [[ "$NODE_NAME" != "node" ]];then
