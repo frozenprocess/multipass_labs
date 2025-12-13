@@ -9,30 +9,33 @@ K3S_FEATURES_DISABLED="traefik,local-storage,metrics-server"
 #DISABLE_KUBE_PROXY="--disable-kube-proxy"
 DISABLE_KUBE_PROXY=""
 ## KUBEADM VARS
-KUBERNETES_VERSION=1.31
-CIDR=172.16.0.0
-CONTAINERD=2.0.2
-RUNC=1.2.4
-CNI_PLUGIN=1.6.2
+KUBERNETES_VERSION=1.35
+CONTAINERD=2.2.0
+RUNC=1.4.0
+CNI_PLUGIN=1.9.0
 
 # What form of nonsense OS are you running?
-@if [[ $$(uname -s) == "Darwin" ]]; then \
-	BASE_DECODE="base64 -i"; \
-else \
-	BASE_DECODE="base64 -w 0"; \
-fi; \
+UNAME_S := $(shell uname -s)
 
-SSH_KEY:=$(shell cat ${HOME}/.ssh/id_rsa.pub)
+ifeq ($(UNAME_S),Darwin)
+    BASE_DECODE = base64 -i
+else
+    BASE_DECODE = base64 -w 0
+endif
+
+SSH_KEY:=$(shell sed 's/^/      /' certs/id_rsa | awk '{printf "%s\\\\n", $$0}')
+SSH_KEY_PUB:=$(shell cat certs/id_rsa.pub)
 # YAML is annoying so we pad the cert
 CA_CRT:=$(shell sed 's/^/      /' certs/ca.crt | awk '{printf "%s\\\\n", $$0}')
 PREPARE:=$(shell ${BASE_DECODE} prepare.sh)
-CONTROL:=$(shell base64 -i control.sh)
-K3S_INSTALL:=$(shell base64 -i k3s.sh)
-KUBEADM_INSTALL:=$(shell base64 -i kubeadm.sh)
+CONTROL:=$(shell ${BASE_DECODE} control.sh)
+NODE:=$(shell ${BASE_DECODE} node.sh)
+K3S_INSTALL:=$(shell ${BASE_DECODE} k3s.sh)
+KUBEADM_INSTALL:=$(shell ${BASE_DECODE} kubeadm.sh)
 # Private registry
-REGISTRY_CONFIG=$(shell base64 -i registry-config.yml)
-REGISTRY_CRT=$(shell base64 -i certs/domain.crt)
-REGISTRY_KEY=$(shell base64 -i certs/domain.key)
+REGISTRY_CONFIG=$(shell ${BASE_DECODE} registry-config.yml)
+REGISTRY_CRT=$(shell ${BASE_DECODE} certs/domain.crt)
+REGISTRY_KEY=$(shell ${BASE_DECODE} certs/domain.key)
 
 help:
 	echo "helping"
@@ -43,14 +46,21 @@ k3s:
 
 	sed \
 		-e "s|{{SSH_KEY}}|${SSH_KEY}|g" \
+		-e "s|{{SSH_KEY_PUB}}|${SSH_KEY_PUB}|g" \
 		-e "s|{{CA_CRT}}|${CA_CRT}|g" \
 		-e "s|{{PREPARE}}|${PREPARE}|g" \
 		-e "s|{{CONTROL}}|${CONTROL}|g" \
 		-e "s|{{INSTALL}}|${K3S_INSTALL}|g" \
+		-e "s|{{CLUSTER_CIDR}}|${CLUSTER_CIDR}|g" \
+		-e "s|{{SERVICE_CIDR}}|${SERVICE_CIDR}|g" \
+		-e "s|{{CLUSTER_DNS}}|${CLUSTER_DNS}|g" \
+		-e "s|{{K3S_FEATURES_DISABLED}}|${K3S_FEATURES_DISABLED}|g" \
+		-e "s|{{DISABLE_KUBE_PROXY}}|${DISABLE_KUBE_PROXY}|g" \
 		templates/control.yaml > release/k3s/control-init.yaml
 
 	sed \
 		-e "s|{{SSH_KEY}}|${SSH_KEY}|g" \
+		-e "s|{{SSH_KEY_PUB}}|${SSH_KEY_PUB}|g" \
 		-e "s|{{CA_CRT}}|${CA_CRT}|g" \
 		-e "s|{{PREPARE}}|${PREPARE}|g" \
 		-e "s|{{NODE}}|${NODE}|g" \
@@ -63,14 +73,21 @@ kubeadm:
 
 	sed \
 		-e "s|{{SSH_KEY}}|${SSH_KEY}|g" \
+		-e "s|{{SSH_KEY_PUB}}|${SSH_KEY_PUB}|g" \
 		-e "s|{{CA_CRT}}|${CA_CRT}|g" \
 		-e "s|{{PREPARE}}|${PREPARE}|g" \
 		-e "s|{{CONTROL}}|${CONTROL}|g" \
 		-e "s|{{INSTALL}}|${KUBEADM_INSTALL}|g" \
+		-e "s|{{CLUSTER_CIDR}}|${CLUSTER_CIDR}|g" \
+		-e "s|{{SERVICE_CIDR}}|${SERVICE_CIDR}|g" \
+		-e "s|{{CLUSTER_DNS}}|${CLUSTER_DNS}|g" \
+		-e "s|{{K3S_FEATURES_DISABLED}}||g" \
+		-e "s|{{DISABLE_KUBE_PROXY}}||g" \
 		templates/control.yaml > release/kubeadm/control-init.yaml
 
 	sed \
 		-e "s|{{SSH_KEY}}|${SSH_KEY}|g" \
+		-e "s|{{SSH_KEY_PUB}}|${SSH_KEY_PUB}|g" \
 		-e "s|{{CA_CRT}}|${CA_CRT}|g" \
 		-e "s|{{PREPARE}}|${PREPARE}|g" \
 		-e "s|{{NODE}}|${NODE}|g" \
@@ -87,7 +104,7 @@ registry:
 		-e "s|{{REGISTRY_CONFIG}}|${REGISTRY_CONFIG}|g" \
 		-e "s|{{REGISTRY_CRT}}|${REGISTRY_CRT}|g" \
 		-e "s|{{REGISTRY_KEY}}|${REGISTRY_KEY}|g" \
-		-e "s|{{SSH_KEY}}|${SSH_KEY}|g" \
+		-e "s|{{SSH_KEY_PUB}}|${SSH_KEY_PUB}|g" \
 		templates/registry.yaml > release/kubeadm/registry-init.yaml
 		cp release/kubeadm/registry-init.yaml release/k3s/registry-init.yaml
 
@@ -114,6 +131,9 @@ certs:
 		-days 1024 \
 		-sha256 -extensions v3_req -extfile req.conf
 
+ssh:
+	ssh-keygen -t rsa -b 2048 -f certs/id_rsa -q -N ""
+
 build: k3s kubeadm registry
 
 
@@ -121,7 +141,7 @@ build: k3s kubeadm registry
 # $$BASE_DECODE templates/control.yaml
 # $$BASE_DECODE templates/control.yaml
 
-all: clean certs build
+all: clean certs ssh build
 
 clean:
 	rm -rf certs

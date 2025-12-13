@@ -23,7 +23,7 @@ write_files:
   path: /etc/docker/registry/ca.key
 disable_root: false
 ssh_authorized_keys:
-  - {{SSH_KEY}}
+  - {{SSH_KEY_PUB}}
 runcmd:
   - [ /usr/bin/chmod, +x, /root/prepare.sh ]
   - [ /root/prepare.sh ]

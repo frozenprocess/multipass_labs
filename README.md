@@ -44,9 +44,10 @@ Use the following command to build the cloud-init that bootstraps the k3s instal
 
 Pretty simple just use the following commands:
 ```
-multipass launch -n c1-control -c 2 -d 50G -m 2048M 24.04 --cloud-init  release/control-init.yaml
-multipass launch -n c1-node-1 -c 2 -d 50G  -m 2048M 24.04 --cloud-init  release/node-init.yaml
+multipass launch -n c1-control -c 2 -d 50G -m 2048M 24.04 --cloud-init  release/kubeadm/control-init.yaml
+multipass launch -n c1-node-1 -c 2 -d 50G  -m 2048M 24.04 --cloud-init  release/kubeadm/node-init.yaml
 ```
+
 You can create multiple nodes by changing the node name in the last command and running it again
 ```
 multipass launch -n c1-node-2 -c 2 -d 50G  -m 2048M 24.04 --cloud-init  release/node-init.yaml

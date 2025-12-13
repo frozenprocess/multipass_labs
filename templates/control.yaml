@@ -5,7 +5,7 @@ users:
   - default
 disable_root: false
 ssh_authorized_keys:
-  - {{SSH_KEY}}
+  - {{SSH_KEY_PUB}}
 ca_certs:
   trusted:
     - registry_ca_crt
@@ -13,7 +13,7 @@ ca_certs:
 {{CA_CRT}}
 write_files:
 - encoding: b64
-  content: $PREPARE
+  content: {{PREPARE}}
   owner: root:root
   path: /root/prepare.sh
 - encoding: b64
@@ -29,6 +29,8 @@ runcmd:
   - [ /root/prepare.sh ]
   - [ /usr/bin/chmod, +x, /root/install.sh ]
   - [ /root/install.sh ]
+  - [ /usr/bin/chmod, +x, /root/control.sh ]
+  - [ /root/control.sh, "{{CLUSTER_CIDR}}", "{{SERVICE_CIDR}}", "{{CLUSTER_DNS}}", "{{K3S_FEATURES_DISABLED}}", "{{DISABLE_KUBE_PROXY}}" ]
   - [ /usr/bin/chown, -R, ubuntu:ubuntu, /home/ubuntu ]
 
 power_state:

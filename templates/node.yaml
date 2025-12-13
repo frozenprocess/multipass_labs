@@ -21,11 +21,17 @@ write_files:
   content: {{INSTALL}}
   owner: root:root
   path: /root/install.sh
-ssh_authorized_keys:
-  - {{SSH_KEY}}
+ssh_keys:
+  rsa_private: |
+{{SSH_KEY}}
+
+  rsa_public: {{SSH_KEY_PUB}}
+
 runcmd:
   - [ /usr/bin/chmod, +x, /root/prepare.sh]
   - [ /root/prepare.sh ]
+  - [ /usr/bin/chmod, +x, /root/node.sh ]
+  - [ /root/node.sh ]
   - [ /usr/bin/chmod, +x, /root/install.sh ]
   - [ /root/install.sh ]
   - [ /usr/bin/chown, -R, ubuntu:ubuntu, /home/ubuntu ]
