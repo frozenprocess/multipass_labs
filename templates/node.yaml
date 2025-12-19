@@ -44,10 +44,10 @@ runcmd:
   - [ source, /etc/environment ]
   - [ /usr/bin/chmod, +x, /root/prepare.sh]
   - [ /root/prepare.sh ]
-  - [ /usr/bin/chmod, +x, /root/node.sh ]
-  - [ /root/node.sh ]
   - [ /usr/bin/chmod, +x, /root/install.sh ]
   - [ /root/install.sh ]
+  - [ /usr/bin/chmod, +x, /root/node.sh ]
+  - [ /root/node.sh ]
   - [ /usr/bin/chown, -R, ubuntu:ubuntu, /home/ubuntu ]
 
 power_state:

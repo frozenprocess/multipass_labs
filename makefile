@@ -2,22 +2,22 @@
 # Configuration Variables
 # =============================================================================
 
-## Cluster Configuration
-CLUSTER_CIDR="172.16.0.0/16"
-SERVICE_CIDR="10.43.0.0/16"
-CLUSTER_DNS="10.43.0.10"
+# Networking
+CLUSTER_CIDR  ?= 172.16.0.0/16
+SERVICE_CIDR  ?= 10.43.0.0/16
+CLUSTER_DNS   ?= 10.43.0.10
 
-## K3S Configuration
-K3S_VERSION="v1.32.0%2Bk3s1"
-K3S_FEATURES_DISABLED="traefik,local-storage,metrics-server"
-DISABLE_KUBE_PROXY=""
+# K3s configuration
+K3S_VERSION            ?= v1.32.0%2Bk3s1
+K3S_FEATURES_DISABLED  ?= traefik,local-storage,metrics-server
+DISABLE_KUBE_PROXY     ?=
 
-## Kubeadm Configuration
-KUBERNETES_VERSION=1.35
-CONTAINERD=2.2.0
-RUNC=1.4.0
-CNI_PLUGIN=1.9.0
-RELEASE_CHANNEL=prerelease
+# Kubeadm configuration
+KUBERNETES_VERSION ?= 1.34
+CONTAINERD         ?= 2.2.0
+RUNC               ?= 1.4.0
+CNI_PLUGIN         ?= 1.9.0
+RELEASE_CHANNEL    ?= stable
 
 # =============================================================================
 # Platform Detection
