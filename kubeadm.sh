@@ -1,12 +1,6 @@
 #!/bin/bash
-
+set -e
 ## PREPARE
-
-# KUBERNETES_VERSION=1.35
-# CONTAINERD=2.0.2
-# RUNC=1.2.4
-# CNI_PLUGIN=1.6.2
-# RELEASE_CHANNEL=stable
 set -a
 source /etc/environment
 set +a
@@ -62,10 +56,16 @@ containerd config default | sed 's/SystemdCgroup = false/SystemdCgroup = true/' 
 
 systemctl restart containerd
 
+## Support ubuntu 20.04
+DIRECTORY="keyrings"
+if [ ! -d "$DIRECTORY" ]; then
+    DIRECTORY="trusted.gpg.d"
+fi
+
 sudo apt-get update
 sudo apt-get install -y apt-transport-https ca-certificates curl gpg
-curl -fsSL https://pkgs.k8s.io/core:/$RELEASE_CHANNEL:/v$KUBERNETES_VERSION/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
-echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/$RELEASE_CHANNEL:/v$KUBERNETES_VERSION/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+curl -fsSL https://pkgs.k8s.io/core:/$KUBERNETES_RELEASE_CHANNEL:/v$KUBERNETES_VERSION/deb/Release.key | sudo gpg --dearmor -o /etc/apt/$DIRECTORY/kubernetes-apt-keyring.gpg
+echo "deb [signed-by=/etc/apt/$DIRECTORY/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/$KUBERNETES_RELEASE_CHANNEL:/v$KUBERNETES_VERSION/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
 sudo apt-get update
 sudo apt-get install -y kubelet kubeadm kubectl jq
 sudo apt-mark hold kubelet kubeadm kubectl

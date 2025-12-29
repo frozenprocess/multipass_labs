@@ -15,13 +15,14 @@ write_files:
     export CLUSTER_CIDR="{{CLUSTER_CIDR}}"
     export SERVICE_CIDR="{{SERVICE_CIDR}}"
     export CLUSTER_DNS="{{CLUSTER_DNS}}"
+    export K3S_VERSION="{{K3S_VERSION}}"
     export K3S_FEATURES_DISABLED="{{K3S_FEATURES_DISABLED}}"
     export DISABLE_KUBE_PROXY="{{DISABLE_KUBE_PROXY}}"
     export KUBERNETES_VERSION="{{KUBERNETES_VERSION}}"
     export CONTAINERD="{{CONTAINERD}}"
     export RUNC="{{RUNC}}"
     export CNI_PLUGIN="{{CNI_PLUGIN}}"
-    export RELEASE_CHANNEL="{{RELEASE_CHANNEL}}"
+    export KUBERNETES_RELEASE_CHANNEL="{{KUBERNETES_RELEASE_CHANNEL}}"
 - encoding: b64
   content: {{PREPARE}}
   owner: root:root

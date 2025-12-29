@@ -8,16 +8,16 @@ SERVICE_CIDR  ?= 10.43.0.0/16
 CLUSTER_DNS   ?= 10.43.0.10
 
 # K3s configuration
-K3S_VERSION            ?= v1.32.0%2Bk3s1
+K3S_VERSION            ?= v1.34.3%2Bk3s1
 K3S_FEATURES_DISABLED  ?= traefik,local-storage,metrics-server
 DISABLE_KUBE_PROXY     ?=
 
 # Kubeadm configuration
+KUBERNETES_RELEASE_CHANNEL    ?= stable
 KUBERNETES_VERSION ?= 1.34
 CONTAINERD         ?= 2.2.0
 RUNC               ?= 1.4.0
 CNI_PLUGIN         ?= 1.9.0
-RELEASE_CHANNEL    ?= stable
 
 # =============================================================================
 # Platform Detection
@@ -60,9 +60,9 @@ define common-subs
 -e "s|{{CLUSTER_CIDR}}|$(CLUSTER_CIDR)|g" \
 -e "s|{{SERVICE_CIDR}}|$(SERVICE_CIDR)|g" \
 -e "s|{{CLUSTER_DNS}}|$(CLUSTER_DNS)|g" \
--e "s|{{K3S_FEATURES_DISABLED}}||g" \
--e "s|{{DISABLE_KUBE_PROXY}}||g" \
--e "s|{{RELEASE_CHANNEL}}|$(RELEASE_CHANNEL)|g" \
+-e "s|{{K3S_FEATURES_DISABLED}}|$(K3S_FEATURES_DISABLED)|g" \
+-e "s|{{DISABLE_KUBE_PROXY}}|$(DISABLE_KUBE_PROXY)|g" \
+-e "s|{{KUBERNETES_RELEASE_CHANNEL}}|$(KUBERNETES_RELEASE_CHANNEL)|g" \
 -e "s|{{KUBERNETES_VERSION}}|$(KUBERNETES_VERSION)|g" \
 -e "s|{{CONTAINERD}}|$(CONTAINERD)|g" \
 -e "s|{{RUNC}}|$(RUNC)|g" \
