@@ -13,7 +13,8 @@ ARCH="arm64"
 fi
 
 echo "Downloading calicoctl binary $ARCH"
-/usr/bin/curl -L https://github.com/projectcalico/calico/releases/latest/download/calicoctl-linux-arm64 -o /usr/local/bin/calicoctl
+
+/usr/bin/curl -L https://github.com/projectcalico/calico/releases/latest/download/calicoctl-linux-$ARCH -o /usr/local/bin/calicoctl
 /usr/bin/chmod +x /usr/local/bin/calicoctl 
 
 # Mac OS discovery fix
