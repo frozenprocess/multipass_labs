@@ -1,0 +1,66 @@
+package_update: true
+packages:
+  - conntrack
+users:
+  - default
+disable_root: false
+ssh_authorized_keys:
+  - {{SSH_KEY_PUB}}
+ca_certs:
+  trusted:
+    - registry_ca_crt
+    - |
+{{CA_CRT}}
+write_files:
+- path: "/etc/environment"
+  append: true
+  content: |
+    export CLUSTER_CIDR="{{CLUSTER_CIDR}}"
+    export SERVICE_CIDR="{{SERVICE_CIDR}}"
+    export CLUSTER_DNS="{{CLUSTER_DNS}}"
+    export K3S_VERSION="{{K3S_VERSION}}"
+    export K3S_FEATURES_DISABLED="{{K3S_FEATURES_DISABLED}}"
+    export DISABLE_KUBE_PROXY="{{DISABLE_KUBE_PROXY}}"
+    export KUBERNETES_VERSION="{{KUBERNETES_VERSION}}"
+    export CONTAINERD="{{CONTAINERD}}"
+    export RUNC="{{RUNC}}"
+    export CNI_PLUGIN="{{CNI_PLUGIN}}"
+    export KUBERNETES_RELEASE_CHANNEL="{{KUBERNETES_RELEASE_CHANNEL}}"
+    export CALIENT_VERSION="{{CALIENT_VERSION}}"
+- encoding: b64
+  content: {{PREPARE}}
+  owner: root:root
+  path: /root/prepare.sh
+- encoding: b64
+  content: {{INSTALL}}
+  owner: root:root
+  path: /root/install.sh
+- encoding: b64
+  content: {{CONTROL}}
+  owner: root:root
+  path: /root/control.sh
+- encoding: b64
+  content: {{CALIENT_INSTALL}}
+  owner: root:root
+  path: /root/calient-full-install.sh
+- encoding: b64
+  content: {{DOCKER_CONFIG}}
+  owner: root:root
+  path: /root/docker.config
+- encoding: b64
+  content: {{CALIENT_LICENSE}}
+  owner: root:root
+  path: /root/license.yaml
+runcmd:
+  - [ /usr/bin/chmod, +x, /root/prepare.sh ]
+  - [ /root/prepare.sh ]
+  - [ /usr/bin/chmod, +x, /root/install.sh ]
+  - [ /root/install.sh ]
+  - [ /usr/bin/chmod, +x, /root/control.sh ]
+  - [ /root/control.sh ]
+  - [ /usr/bin/chmod, +x, /root/calient-full-install.sh ]
+  - [ /root/calient-full-install.sh ]
+  - [ /usr/bin/chown, -R, ubuntu:ubuntu, /home/ubuntu ]
+
+power_state:
+  mode: reboot

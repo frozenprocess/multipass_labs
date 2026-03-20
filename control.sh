@@ -1,11 +1,5 @@
 #!/bin/bash
 
-# CLUSTER_CIDR=$1
-# SERVICE_CIDR=$2
-# CLUSTER_DNS=$3
-# K3S_FEATURES=$4
-# DISABLE_KUBE_PROXY=$5
-
 set -a
 source /etc/environment
 set +a

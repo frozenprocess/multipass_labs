@@ -4,19 +4,6 @@ set -a
 source /etc/environment
 set +a
 
-# WHATS the ARCH?
-if [[ `uname -m` == "x86_64" ]]
-then
-ARCH="amd64"
-else
-ARCH="arm64"
-fi
-
-echo "Downloading calicoctl binary $ARCH"
-
-/usr/bin/curl -L https://github.com/projectcalico/calico/releases/latest/download/calicoctl-linux-$ARCH -o /usr/local/bin/calicoctl
-/usr/bin/chmod +x /usr/local/bin/calicoctl 
-
 # Mac OS discovery fix
 cat >> /etc/systemd/resolved.conf <<-EOF
 MulticastDNS=yes

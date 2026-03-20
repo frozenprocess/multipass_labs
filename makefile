@@ -19,6 +19,12 @@ CONTAINERD         ?= 2.2.0
 RUNC               ?= 1.4.0
 CNI_PLUGIN         ?= 1.9.0
 
+# Calico Enterprise configuration
+CALIENT            ?=
+CALIENT_VERSION    ?= v3.20.0
+DOCKER_CONFIG      ?= enterprise_files/docker.config
+CALIENT_LICENSE    ?= enterprise_files/license.yaml
+
 # =============================================================================
 # Platform Detection
 # =============================================================================
@@ -45,6 +51,25 @@ KUBEADM_INSTALL:=$(shell ${BASE_DECODE} kubeadm.sh)
 REGISTRY_CONFIG=$(shell ${BASE_DECODE} registry-config.yml)
 REGISTRY_CRT=$(shell ${BASE_DECODE} certs/domain.crt)
 REGISTRY_KEY=$(shell ${BASE_DECODE} certs/domain.key)
+
+# Calico Enterprise file encoding (conditional)
+ifdef CALIENT
+ifeq ($(wildcard enterprise_files),)
+$(error CALIENT is enabled but enterprise_files/ is missing. Add enterprise_files/ to the project root or disable CALIENT)
+endif
+
+ifeq ($(wildcard $(DOCKER_CONFIG)),)
+$(error CALIENT is enabled but $(DOCKER_CONFIG) was not found)
+endif
+
+ifeq ($(wildcard $(CALIENT_LICENSE)),)
+$(error CALIENT is enabled but $(CALIENT_LICENSE) was not found)
+endif
+
+CALIENT_INSTALL_B64:=$(shell ${BASE_DECODE} calient-full-install.sh)
+DOCKER_CONFIG_B64:=$(shell ${BASE_DECODE} $(DOCKER_CONFIG))
+CALIENT_LICENSE_B64:=$(shell ${BASE_DECODE} $(CALIENT_LICENSE))
+endif
 
 # =============================================================================
 # Common Substitution Patterns
@@ -89,6 +114,10 @@ help:
 	@echo "  clean     - Remove generated certs and release directories"
 	@echo "  help      - Show this help message"
 	@echo ""
+	@echo "Calico Enterprise:"
+	@echo "  CALIENT=true make k3s  - Generate k3s configs with Calico Enterprise"
+	@echo "  Requires docker.config and calient-license.sh in project root"
+	@echo ""
 	@echo ""
 	@echo "Report issues in https://github.com/frozenprocess/multipass_labs"
 	@echo ""
@@ -96,11 +125,24 @@ help:
 
 k3s: | release/k3s
 	@echo "Generating k3s configuration files..."
+ifdef CALIENT
+	@echo "  Calico Enterprise variant enabled"
+	sed $(call common-subs) \
+		-e "s|{{CONTROL}}|$(CONTROL)|g" \
+		-e "s|{{INSTALL}}|$(K3S_INSTALL)|g" \
+		-e "s|{{K3S_VERSION}}|$(K3S_VERSION)|g" \
+		-e "s|{{CALIENT_VERSION}}|$(CALIENT_VERSION)|g" \
+		-e "s|{{CALIENT_INSTALL}}|$(CALIENT_INSTALL_B64)|g" \
+		-e "s|{{DOCKER_CONFIG}}|$(DOCKER_CONFIG_B64)|g" \
+		-e "s|{{CALIENT_LICENSE}}|$(CALIENT_LICENSE_B64)|g" \
+		templates/calient-control.yaml > release/k3s/control-init.yaml
+else
 	sed $(call common-subs) \
 		-e "s|{{CONTROL}}|$(CONTROL)|g" \
 		-e "s|{{INSTALL}}|$(K3S_INSTALL)|g" \
 		-e "s|{{K3S_VERSION}}|$(K3S_VERSION)|g" \
 		templates/control.yaml > release/k3s/control-init.yaml
+endif
 
 	sed $(call common-subs) \
 		-e "s|{{NODE}}|$(NODE)|g" \

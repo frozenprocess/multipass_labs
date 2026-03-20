@@ -1,9 +1,5 @@
 #!/bin/bash
 
-#K3S_VERSION="v1.23.16%2Bk3s1"
-#K3S_VERSION="v1.25.8%2Bk3s1"
-# K3S_VERSION=$1
-
 set -a
 source /etc/environment
 set +a
