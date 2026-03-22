@@ -96,6 +96,7 @@ Launch nodes:
 multipass launch -n c1-control -c 2 -d 50G -m 2048M 22.04 --cloud-init release/kubeadm/control-init.yaml
 multipass launch -n c1-node-1 -c 2 -d 50G -m 2048M 22.04 --cloud-init release/kubeadm/node-init.yaml
 ```
+> **Note**: Make sure you update the ipaddress in the config file.
 
 Export kubeconfig:
 
@@ -149,7 +150,7 @@ https://docs.docker.com/registry/deploying/#support-for-lets-encrypt
 Generate k3s control/node files with Calico Enterprise installer payloads:
 
 ```bash
-CALIENT=true CALIENT_VERSION="v3.23.0-1.0" make k3s
+CALIENT=true CALIENT_VERSION="v3.23.0-1.0" make certs ssh k3s
 ```
 
 You can override related file paths if needed:

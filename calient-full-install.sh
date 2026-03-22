@@ -207,18 +207,18 @@ done
 # Let's show off the UI
 if version_gte "$CALIENT_VERSION" "v3.23"; then
     echo "Creating Tigera Manager external service"
-    while [[ $(kubectl get service tigera-manager-external -n tigera-manager -o=jsonpath='{.metadata.name}' 2>/dev/null) == "" ]]
+    while [[ $(kubectl get service calico-manager-external -n calico-system -o=jsonpath='{.metadata.name}' 2>/dev/null) == "" ]]
     do
         kubectl create -f -<<EOF 2>/dev/null || true
-apiVersion: v1
 kind: Service
+apiVersion: v1
 metadata:
-  name: tigera-manager-external
-  namespace: tigera-manager
+  name: calico-manager-external
+  namespace: calico-system
 spec:
   type: LoadBalancer
   selector:
-    k8s-app: tigera-manager
+    k8s-app: calico-manager
   externalTrafficPolicy: Local
   ports:
     - port: 9443
@@ -284,3 +284,18 @@ EOF
     sleep 2
 done
 echo "Service account token secret created successfully"
+
+# Extract UI secret for easy access
+kubectl describe secret calidemo | grep ^token | awk '{ print $2 }' > /home/ubuntu/ui-secret.txt
+
+# Create login welcome message
+cat > /etc/profile.d/calico-welcome.sh << 'WELCOME'
+echo ""
+echo "Your Calico Enterprise cluster is ready. Use this secret to access the Calico Dashboard:"
+echo ""
+cat /home/ubuntu/ui-secret.txt
+echo ""
+echo "Copy/paste with Ctrl-Insert/Shift-Insert. You can also find this secret at /home/ubuntu/ui-secret.txt"
+echo ""
+WELCOME
+chmod +x /etc/profile.d/calico-welcome.sh
